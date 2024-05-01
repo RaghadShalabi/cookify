@@ -7,12 +7,15 @@ import fileUpload, { fileValidation } from "../../services/multer.js";
 import { asyncHandler } from "../../middleware/errorHandling.js";
 import ratingRouter from "../rating/rating.router.js"
 import commentRouter from "../comment/comment.router.js"
+import { validation } from "../../middleware/validation.js";
+import * as validators from "./recipe.validation.js";
+
 
 router.use("/:recipeId/comment", commentRouter);
 router.use("/:recipeId/rating", ratingRouter);
 router.get("/", asyncHandler(recipeController.getAllRecipes));
 router.get("/:id", asyncHandler(recipeController.getRecipeById));
-router.post("/", auth(endPoint.create), fileUpload(fileValidation.image).single("image"), asyncHandler(recipeController.createRecipe));
+router.post("/", auth(endPoint.create), fileUpload(fileValidation.image).single("image"), validation(validators.createRecipe), asyncHandler(recipeController.createRecipe));
 router.delete("/:id", auth(endPoint.delete), asyncHandler(recipeController.deleteRecipe));
 router.patch("/:id", auth(endPoint.update), fileUpload(fileValidation.image).single("image"), asyncHandler(recipeController.updateRecipe))
 

@@ -31,13 +31,10 @@ export const createCategory = async (req, res, next) => {
     if (await categoryModel.findOne({ name })) {
         return next(new Error("Category name already exists", { cause: 409 }));
     }
-
     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
         folder: `${process.env.APP_NAME}/category`,
-    }
-    );
+    });
     const category = await categoryModel.create({ name, slug: slugify(name), image: { secure_url, public_id }, createdBy: req.user._id, updatedBy: req.user._id, });
-
     return res.status(201).json({ message: "success", category });
 };
 
@@ -77,5 +74,5 @@ export const deleteCategory = async (req, res, next) => {
     await favoriteModel.updateMany(
         { "recipes.categoryId": categoryId },
         { $pull: { recipes: { categoryId } } }
-    );    return res.status(200).json({ message: "success", category });
+    ); return res.status(200).json({ message: "success", category });
 };
